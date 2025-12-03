@@ -506,7 +506,7 @@ typedef void (^NavigatorUserMediaSuccessCallback)(RTCMediaStream* mediaStream);
 
     if ([videoDevice lockForConfiguration:NULL]) {
       @try {
-        videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 30);
+        // videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 30);
         videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 30);
       } @catch (NSException* exception) {
         NSLog(@"Failed to set active frame rate!\n User info:%@", exception.userInfo);
