@@ -504,14 +504,25 @@ typedef void (^NavigatorUserMediaSuccessCallback)(RTCMediaStream* mediaStream);
     
     NSLog(@"target format %ldx%ld, targetFps: %ld, selected format: %ldx%ld, selected fps %ld", targetWidth, targetHeight, targetFps, selectedWidth, selectedHeight, selectedFps);
 
-    if ([videoDevice lockForConfiguration:NULL]) {
+    NSError *error = nil;
+    if ([videoDevice lockForConfiguration:&error]) {
       @try {
         videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, (int32_t)selectedFps);
         videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, (int32_t)selectedFps);
       } @catch (NSException* exception) {
-        NSLog(@"Failed to set active frame rate!\n User info:%@", exception.userInfo);
+        NSLog(@"Failed to set active frame rate to %d fps!\n User info:%@", (int32_t)selectedFps, exception.userInfo);
+        @try {
+          videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 30);
+          videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 30);
+          NSLog(@"Successfully set fallback frame rate to 30 fps");
+        } @catch (NSException* fallbackException) {
+          NSLog(@"Failed to set fallback frame rate to 30 fps!\n User info:%@", fallbackException.userInfo);
+        }
+      } @finally {
+        [videoDevice unlockForConfiguration];
       }
-      [videoDevice unlockForConfiguration];
+    } else {
+      NSLog(@"Failed to lock video device for configuration: %@", error.localizedDescription);
     }
 
     [self.videoCapturer startCaptureWithDevice:videoDevice
