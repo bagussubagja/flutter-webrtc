@@ -115,18 +115,25 @@ public class SurfaceTextureRenderer extends EglRenderer {
     ThreadUtils.checkIsOnMainThread();
     this.producer = producer;
     this.producer.setCallback(
-            new TextureRegistry.SurfaceProducer.Callback() {
-              @Override
-              public void onSurfaceCreated() {
-                // Add this new required method
-              }
+           new TextureRegistry.SurfaceProducer.Callback() {
+//                    @Override
+                    public void onSurfaceAvailable() {
+                    }
+//                // Do surface initialization here, and draw the current frame.
+                    @Override
+                    public void onSurfaceCreated() {
 
-             @Override
-              public void onSurfaceDestroyed() {
-               // Cleanup when surface is destroyed
-                surfaceDestroyed();
-              }
-        }
+                    }
+
+//                    @Override
+                    public void onSurfaceCleanup() {
+                        surfaceDestroyed();
+                    }
+                    @Override
+                    public void onSurfaceDestroyed() {
+                        surfaceDestroyed();
+                    }
+                }
     );
   }
 
